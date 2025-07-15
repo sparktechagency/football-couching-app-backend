@@ -13,6 +13,12 @@ router.post(
 );
 
 router.post(
+  "/google-signin",
+  validateRequest(AuthValidation.createGoogleAuthZodSchema),
+  AuthController.googleSignIn
+)
+
+router.post(
   '/forget-password',
   validateRequest(AuthValidation.createForgetPasswordZodSchema),
   AuthController.forgetPassword
@@ -32,7 +38,7 @@ router.post(
 
 router.post(
   '/change-password',
-  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  auth(),
   validateRequest(AuthValidation.createChangePasswordZodSchema),
   AuthController.changePassword
 );

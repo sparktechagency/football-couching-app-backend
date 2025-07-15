@@ -11,6 +11,7 @@ export default {
   jwt: {
     jwt_secret: process.env.JWT_SECRET,
     jwt_expire_in: process.env.JWT_EXPIRE_IN,
+    refresh_expire_in: process.env.REFRESH_EXPIRE_IN,
   },
   email: {
     from: process.env.EMAIL_FROM,
@@ -23,4 +24,8 @@ export default {
     email: process.env.SUPER_ADMIN_EMAIL,
     password: process.env.SUPER_ADMIN_PASSWORD,
   },
+  stripe : {
+    secret_key: process.env.STRIPE_KEY,
+    webhook_secret: process.env.WEBHOOK_SECRET,
+  }
 };

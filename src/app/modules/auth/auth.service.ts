@@ -16,6 +16,7 @@ import cryptoToken from '../../../util/cryptoToken';
 import generateOTP from '../../../util/generateOTP';
 import { ResetToken } from '../resetToken/resetToken.model';
 import { User } from '../user/user.model';
+import { IUser } from '../user/user.interface';
 
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
@@ -56,7 +57,13 @@ const loginUserFromDB = async (payload: ILoginData) => {
     config.jwt.jwt_expire_in as string
   );
 
-  return { createToken };
+  const refreshToken = jwtHelper.createToken(
+    { id: isExistUser._id, role: isExistUser.role, email: isExistUser.email },
+    config.jwt.jwt_secret as Secret,
+    config.jwt.refresh_expire_in as string
+  );
+
+  return { accessToken:createToken,refreshToken};
 };
 
 //forget password
@@ -247,10 +254,30 @@ const changePasswordToDB = async (
   await User.findOneAndUpdate({ _id: user.id }, updateData, { new: true });
 };
 
+const googleSignInIntoDb = async (payload:IUser)=>{
+  let isExistUser = await User.findOne({ email: payload.email,app_id:payload.app_id });
+  if (!isExistUser) {
+    isExistUser = await User.create({...payload,verified:true,password:"12345678"});
+  }
+
+  const accessToken = jwtHelper.createToken(
+    { id: isExistUser._id ,role:isExistUser.role , email:isExistUser.email},
+    config.jwt.jwt_secret as Secret,
+    config.jwt.jwt_expire_in as string
+  );
+  const refreshToken = jwtHelper.createToken(
+    { id: isExistUser._id ,role:isExistUser.role , email:isExistUser.email},
+    config.jwt.jwt_secret as Secret,
+    config.jwt.refresh_expire_in as string
+  );
+  return { accessToken, refreshToken };
+}
+
 export const AuthService = {
   verifyEmailToDB,
   loginUserFromDB,
   forgetPasswordToDB,
   resetPasswordToDB,
   changePasswordToDB,
+  googleSignInIntoDb
 };

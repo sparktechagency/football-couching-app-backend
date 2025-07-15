@@ -13,6 +13,7 @@ const payload = {
 
 export const seedSuperAdmin = async () => {
   const isExistSuperAdmin = await User.findOne({
+    name: 'Administrator',
     email: config.super_admin.email,
     role: USER_ROLES.SUPER_ADMIN,
   });

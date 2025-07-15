@@ -24,7 +24,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'User logged in successfully.',
-    data: result.createToken,
+    data: result,
   });
 });
 
@@ -66,10 +66,21 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const googleSignIn = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthService.googleSignInIntoDb(req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User logged in successfully.',
+    data: result,
+  });
+})
+
 export const AuthController = {
   verifyEmail,
   loginUser,
   forgetPassword,
   resetPassword,
   changePassword,
+  googleSignIn
 };

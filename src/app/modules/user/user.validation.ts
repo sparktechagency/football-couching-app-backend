@@ -1,13 +1,15 @@
 import { z } from 'zod';
+import { USER_ROLES } from '../../../enums/user';
 
 const createUserZodSchema = z.object({
   body: z.object({
-    name: z.string({ required_error: 'Name is required' }),
-    contact: z.string({ required_error: 'Contact is required' }),
-    email: z.string({ required_error: 'Email is required' }),
-    password: z.string({ required_error: 'Password is required' }),
-    location: z.string({ required_error: 'Location is required' }),
-    profile: z.string().optional(),
+    name: z.string({ required_error: 'Name is required' }).optional(),
+    // contact: z.string({ required_error: 'Contact is required' }).optional(),
+    email: z.string({ required_error: 'Email is required' }).optional(),
+    password: z.string({ required_error: 'Password is required' }).optional(),
+    // location: z.string({ required_error: 'Location is required' }),
+    // profile: z.string().optional(),
+    role : z.nativeEnum(USER_ROLES),
   }),
 });
 

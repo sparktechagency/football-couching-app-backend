@@ -10,7 +10,7 @@ const userSchema = new Schema<IUser, UserModal>(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       type: String,
@@ -41,6 +41,10 @@ const userSchema = new Schema<IUser, UserModal>(
     verified: {
       type: Boolean,
       default: false,
+    },
+    app_id: {
+      type: String,
+      required: false,
     },
     authentication: {
       type: {
@@ -91,7 +95,7 @@ userSchema.pre('save', async function (next) {
   }
 
   //password hash
-  this.password = await bcrypt.hash(
+  this.password! = await bcrypt.hash(
     this.password,
     Number(config.bcrypt_salt_rounds)
   );

@@ -8,10 +8,11 @@ import unlinkFile from '../../../shared/unlinkFile';
 import generateOTP from '../../../util/generateOTP';
 import { IUser } from './user.interface';
 import { User } from './user.model';
+import { getRandomId } from '../../../shared/idGenerator';
+import { jwtHelper } from '../../../helpers/jwtHelper';
+import config from '../../../config';
 
-const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
-  //set role
-  payload.role = USER_ROLES.USER;
+const createUserToDB = async (payload: Partial<IUser>)=> {
   const createUser = await User.create(payload);
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
@@ -20,7 +21,7 @@ const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   //send email
   const otp = generateOTP();
   const values = {
-    name: createUser.name,
+    name: createUser.name!,
     otp: otp,
     email: createUser.email!,
   };
