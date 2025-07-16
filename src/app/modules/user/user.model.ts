@@ -63,6 +63,26 @@ const userSchema = new Schema<IUser, UserModal>(
       },
       select: 0,
     },
+    address: {
+      type: String,
+      required: false,
+    },
+    student_id: {
+      type: String,
+      required: false,
+    },
+    contact: {
+      type: String,
+      required: false,
+    },
+    nationality: {
+      type: String,
+      required: false,
+    },
+    dob: {
+      type: Date,
+      required: false,
+    },
   },
   { timestamps: true }
 );

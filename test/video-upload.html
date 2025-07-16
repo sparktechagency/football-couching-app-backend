@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chunkwise Video Upload</title>
+</head>
+<body>
+  <h2>🎥 Upload Video (Chunked)</h2>
+  <input type="file" id="videoInput" />
+  <button onclick="upload()">Upload</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function upload() {
+      const file = document.getElementById('videoInput').files[0];
+      if (!file) {
+        alert("Please select a file first.");
+        return;
+      }
+
+      const chunkSize = 2 * 1024 * 1024; // 2MB
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      const fileId = Date.now(); // or use uuid
+      const fileName = file.name;
+
+      const status = document.getElementById("status");
+      status.innerText = "Uploading...";
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(file.size, start + chunkSize);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", chunk);
+        formData.append("chunkIndex", i);
+        formData.append("totalChunks", totalChunks);
+        formData.append("fileId", fileId);
+        formData.append("fileName", fileName);
+        formData.append("title", "Long Shot")
+        formData.append("description", "A long shot of a person");
+        formData.append("course", "6877aa47b9a7857afd445fd8");
+
+        const res = await fetch("http://10.10.7.6:6005/api/v1/tutorial/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          status.innerText = `❌ Upload failed at chunk ${i}`;
+          return;
+        }
+      }
+
+      status.innerText = "✅ Upload completed & merged!";
+    }
+  </script>
+</body>
+</html>

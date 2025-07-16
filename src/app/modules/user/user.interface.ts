@@ -10,6 +10,11 @@ export type IUser = {
   status: 'active' | 'delete';
   verified: boolean;
   app_id?: string;
+  address?: string;
+  student_id?: string;
+  contact?: string;
+  nationality?: string;
+  dob: Date;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;
