@@ -42,7 +42,7 @@ const deleteCategory = catchAsync(async (req:Request,res:Response)=>{
 
 const getAllCategory = catchAsync(async (req:Request,res:Response)=>{
 
-    const result = await CategoryService.getAllCategoryToDB(req.query)
+    const result = await CategoryService.getAllCategoryToDB(req.query,req.user)
     sendResponse(res,{
         statusCode:200,
         success:true,

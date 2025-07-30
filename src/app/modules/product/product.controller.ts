@@ -23,9 +23,13 @@ const updateProduct = catchAsync(async (req:Request,res:Response)=>{
     const {id} = req.params;
     const image = getMultipleFilesPath(req.files,"image")
     req.body.images = image
+    console.log(req.body);
+    
     if(req.body.sizes){
         req.body.sizes = JSON.parse(req.body.sizes)
     }
+    // console.log(req.body);
+    
     const result = await ProductService.updateProductToDb(id,req.body)
     sendResponse(res,{
         statusCode:200,
@@ -45,7 +49,7 @@ const deleteProduct = catchAsync(async (req:Request,res:Response)=>{
     })
 })
 const getAllProduct = catchAsync(async (req:Request,res:Response)=>{
-    const result = await ProductService.getAllProductToDb(req.query)
+    const result = await ProductService.getAllProductToDb(req.query,req.user)
     sendResponse(res,{
         statusCode:200,
         success:true,
@@ -55,10 +59,22 @@ const getAllProduct = catchAsync(async (req:Request,res:Response)=>{
     })
 })
 
+const getSingleProduct = catchAsync(async (req:Request,res:Response)=>{
+    const {id} = req.params;
+    const result = await ProductService.getSingleProduct(id,req.user)
+    sendResponse(res,{
+        statusCode:200,
+        success:true,
+        message:"Product fetched successfully",
+        data:result
+    })
+})
+
 
 export const ProductController = {
     createProduct,
     updateProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    getSingleProduct
 }

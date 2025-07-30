@@ -5,8 +5,11 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './routes';
 import { Morgan } from './shared/morgen';
 import { handleStripeWebhook } from './webhook/handleStripeWebhook';
+import multer from 'multer';
+import auth from './app/middlewares/auth';
+import { handleChunkUpload } from './helpers/handleChunckUpload';
 const app = express();
-
+const upload = multer({ dest: 'uploads/' });
 //morgan
 app.use(Morgan.successHandler);
 app.use(Morgan.errorHandler);
@@ -20,10 +23,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //file retrieve
+app.use(express.static('assets'))
 app.use(express.static('uploads'));
 
 //router
 app.use('/api/v1', router);
+app.post("/api/v1/upload",upload.single("chunk"),handleChunkUpload)
 
 //live response
 app.get('/', (req: Request, res: Response) => {

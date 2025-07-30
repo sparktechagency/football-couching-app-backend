@@ -48,9 +48,8 @@ const deleteSession = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const upcommingSessions = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await SessionService.upcommingSessions(id);
+const upcommingSession = catchAsync(async (req: Request, res: Response) => {
+  const result = await SessionService.upcommingSession(req.user);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -59,10 +58,47 @@ const upcommingSessions = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const upcommingSessionsForCouch = catchAsync(async (req: Request, res: Response) => {
+
+  const result = await SessionService.upcommingSessionsForCouch(req.query,req.user);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Upcomming Sessions fetched successfully",
+    data: result.data,
+    pagination: result.meta,
+  });
+  
+});
+
+const getSessionDetails = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await SessionService.getSessionDetailsFromDB(id,req.user);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Session details fetched successfully",
+    data: result,
+  });
+});
+
+const upcommingSessionsOfToady = catchAsync(async (req: Request, res: Response) => {
+  const result = await SessionService.todaySessionFromDb(req.user);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Upcomming Sessions fetched successfully",
+    data: result,
+  });
+})
+
 export const SessionController = {
   createSession,
   getAllSessions,
   updateSession,
   deleteSession,
-  upcommingSessions,
+  upcommingSession,
+  upcommingSessionsForCouch,
+  getSessionDetails,
+  upcommingSessionsOfToady
 };

@@ -11,6 +11,7 @@ class QueryBuilder<T> {
 
   //searching
   search(searchableFields: string[]) {
+    
     if (this?.query?.searchTerm) {
       this.modelQuery = this.modelQuery.find({
         $or: searchableFields.map(
@@ -32,6 +33,11 @@ class QueryBuilder<T> {
     const queryObj = { ...this.query };
     const excludeFields = ['searchTerm', 'sort', 'page', 'limit', 'fields'];
     excludeFields.forEach(el => delete queryObj[el]);
+    for (const key in queryObj) {
+      if (['undefined',''].includes(queryObj[key] as string)) {
+        delete queryObj[key];
+      }
+    }
     for (const key in queryObj) {
       if (!queryObj[key]) {
         delete queryObj[key];

@@ -9,12 +9,25 @@ const createWishlistToDB = async (user: JwtPayload, payload: IWishlist) => {
     user: user.id,
     product: payload.product,
   });
-  if (wishlist) throw new ApiError(400, 'Product already in wishlist');
+  let message = ""
+  if (wishlist){
+    message = "Prdocut removed from wishlist"
+
+    await Wislist.findByIdAndDelete(wishlist._id);
+    return {
+      message,
+      data:false
+    };
+  }
   const result = await Wislist.create({
     user: user.id,
     product: payload.product,
   });
-  return result;
+  message = "Product added to wishlist"
+  return {
+    message,
+    data:true
+  };
 };
 
 const getWishlistFromDb = async (

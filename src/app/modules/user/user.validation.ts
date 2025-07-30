@@ -10,6 +10,7 @@ const createUserZodSchema = z.object({
     // location: z.string({ required_error: 'Location is required' }),
     // profile: z.string().optional(),
     role : z.nativeEnum(USER_ROLES),
+    packageId: z.string().optional(),
   }),
 });
 

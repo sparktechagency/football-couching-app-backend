@@ -5,7 +5,7 @@ const cartSchema = new Schema<ICart,CartModel>({
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     quantity: { type: Number, required: true },
-    size: [{ type: String, required: true }],
+    size: { type: String, required: false },
   },
   {
     timestamps: true,

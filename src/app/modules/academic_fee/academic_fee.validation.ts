@@ -5,7 +5,7 @@ const createAcademicFeeZodSchema = z.object({
         course: z.string({
             required_error: "Course is required",
         }),
-        amount: z.number({
+        amount: z.string({
             required_error: "Amount is required",
         }),
     }),

@@ -27,7 +27,30 @@ const createOrder = catchAsync(async (req:Request,res:Response) => {
         data:result
     })
 })
+
+const changeOrderStatus = catchAsync(async (req:Request,res:Response) => {
+    const result = await OrderService.changeOrderStatus(req.params.id,req.body.status)
+    sendResponse(res,{
+        statusCode:StatusCodes.OK,
+        success:true,
+        message:"Order status changed successfully",
+        data:result
+    })
+})
+
+const getOrder = catchAsync(async (req:Request,res:Response) => {
+    const user = req.user
+    const result = await OrderService.getOrderDetailsFromDB(req.params.id)
+    sendResponse(res,{
+        statusCode:StatusCodes.OK,
+        success:true,
+        message:"Order fetched successfully",
+        data:result
+    })
+})
 export const OrderController = {
     getOrders,
-    createOrder
+    createOrder,
+    changeOrderStatus,
+    getOrder
 }

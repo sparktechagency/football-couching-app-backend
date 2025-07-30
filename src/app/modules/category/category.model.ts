@@ -6,7 +6,6 @@ const categoryScema = new Schema<ICategory, CategoryModel>(
   {
     title: { type: String, required: true,unique: true },
     image: { type: String, required: true },
-    type: { type: String, enum: Object.values(CATEGORY_TYPE), required: true },
     status: { type: String, enum: ["active", "deleted"], default: "active" },
   },
   {

@@ -9,6 +9,7 @@ router.route("/")
     .post(auth(),validateRequest(CartValidation.createCartZodSchema),CartController.createCart)
     .get(auth(),CartController.getCart)
 
+router.get("/checkout",auth(),CartController.getCheckoutData)
 router.route("/:id")
     .delete(auth(),CartController.deleteCart)
     .patch(auth(),CartController.increaseCartQuantity)

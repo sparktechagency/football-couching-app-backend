@@ -11,6 +11,19 @@ import { TutorialRoutes } from '../app/modules/tutorial/tutorial.route';
 import { AcademicFeeRoutes } from '../app/modules/academic_fee/academic_fee.route';
 import { CourseRoutes } from '../app/modules/course/course.route';
 import { SessionRoutes } from '../app/modules/session/session.route';
+import { PackageRoutes } from '../app/modules/package/package.route';
+import { SubCategoryRoutes } from '../app/modules/subcategory/subcategory.route';
+import { Homework } from '../app/modules/homework/homework.model';
+import { HomeworkRoutes } from '../app/modules/homework/homework.route';
+import { SubmissionRoutes } from '../app/modules/submission/submission.route';
+import { TopicRoutes } from '../app/modules/topic/topic.route';
+import { EnrollRoutes } from '../app/modules/enroll/enroll.route';
+import { PerformanceRoutes } from '../app/modules/performance/performance.route';
+import { CouponRoutes } from '../app/modules/coupon/coupon.route';
+import { SupportRoutes } from '../app/modules/support/support.route';
+import { NotificationRoutes } from '../app/modules/notification/notification.route';
+import { SubscriptionRoutes } from '../app/modules/subscription/subscription.route';
+import { DashboardRoutes } from '../app/modules/dashboard/dashboard.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -25,6 +38,10 @@ const apiRoutes = [
   {
     path: '/category',
     route: CategoryRoutes,
+  },
+  {
+    path:"/sub-category",
+    route:SubCategoryRoutes,
   },
   {
     path:'/product',
@@ -61,6 +78,50 @@ const apiRoutes = [
   {
     path:"/session",
     route:SessionRoutes
+  },
+  {
+    path:"/package",
+    route:PackageRoutes
+  },
+  {
+    path:"/homework",
+    route:HomeworkRoutes
+  },
+  {
+    path:"/submission",
+    route:SubmissionRoutes
+  },
+  {
+    path:"/topic",
+    route:TopicRoutes
+  },
+  {
+    path:"/enroll",
+    route:EnrollRoutes
+  },
+  {
+    path:"/performance",
+    route:PerformanceRoutes
+  },
+  {
+    path:"/coupon",
+    route:CouponRoutes
+  },
+  {
+    path:"/support",
+    route:SupportRoutes
+  },
+  {
+    path:"/notification",
+    route:NotificationRoutes
+  },
+  {
+    path:"/subscription",
+    route:SubscriptionRoutes
+  },
+  {
+    path:"/dashboard",
+    route:DashboardRoutes
   }
 ];
 

@@ -33,6 +33,8 @@ const fileUploadHandler = () => {
         case 'doc':
           uploadDir = path.join(baseUploadDir, 'doc');
           break;
+        case 'chunk':
+          uploadDir = path.join(baseUploadDir, 'chunks');
         default:
           throw new ApiError(StatusCodes.BAD_REQUEST, 'File is not supported');
       }
@@ -96,9 +98,10 @@ const fileUploadHandler = () => {
     storage: storage,
     fileFilter: filterFilter,
   }).fields([
-    { name: 'image', maxCount: 3 },
+    { name: 'image', maxCount: 10},
     { name: 'media', maxCount: 3 },
     { name: 'doc', maxCount: 3 },
+    { name: 'chunk', maxCount: 100},
   ]);
   return upload;
 };

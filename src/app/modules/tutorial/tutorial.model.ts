@@ -5,7 +5,6 @@ const tutorialSchema = new mongoose.Schema<ITutorial,TutorialModel>({
     course:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Course",
-        required:true
     },
     title:{
         type:String,
@@ -13,12 +12,22 @@ const tutorialSchema = new mongoose.Schema<ITutorial,TutorialModel>({
     },
     description:{
         type:String,
-        required:true
+        required:false
     },
     video:{
         type:String,
         required:true
+    },
+    topic:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Topic"
+    },
+
+    thumbnail:{
+        type:String,
+        default:"https://cdn.pixabay.com/photo/2021/10/09/12/45/play-button-6694068_640.png"
     }
+
 },{
     timestamps:true,
 })

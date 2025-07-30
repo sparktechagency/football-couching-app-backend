@@ -10,4 +10,8 @@ router.route("/")
     .get(auth(),OrderController.getOrders)
     .post(auth(),validateRequest(OrderValidation.createOrderZodSchema),OrderController.createOrder)
 
+router.route("/:id")
+    .patch(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN),validateRequest(OrderValidation.changeOrderStatusZodSchema),OrderController.changeOrderStatus)
+    .get(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN),OrderController.getOrder)
+
 export const OrderRoutes = router

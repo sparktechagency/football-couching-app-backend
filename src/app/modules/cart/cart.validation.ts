@@ -5,13 +5,11 @@ const createCartZodSchema = z.object({
     product: z.string({
       required_error: "Product is required",
     }),
-    quantity: z.number({
+    quantity: z.string({
       required_error: "Quantity is required",
     }),
-    size: z.array(z.string(), {
-      required_error: "Size is required",
-    }),
-  }),
+    size: z.string(),
+  })
 });
 
 export const CartValidation = {

@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IOrder, IOrderItem, OrderItemModel, OrderModel } from "./order.interface";
 import { ORDER_STATUS } from "../../../enums/order";
+import { getRandomId } from "../../../shared/idGenerator";
 
 const orderItemSchema = new Schema<IOrderItem,OrderItemModel>({
     product: {
@@ -70,7 +71,24 @@ const OrderSchema = new Schema<IOrder, OrderModel>({
         type: Number,
         required: true,
     },
+    orderid: {
+        type: String,
+    },
+    invoice: {
+        type: String,
+        required: false
+    }
+},{
+    timestamps: true,
 })
+
+OrderSchema.pre("save", async function (next) {
+    if (!this.isNew) return next();
+    const order = this;
+    const orderId = getRandomId("ORD", 5);
+    order.orderid = orderId;
+    next();
+});
 
 export const Order = model<IOrder, OrderModel>("Order", OrderSchema);
 export const OrderItem = model<IOrderItem, OrderItemModel>("OrderItem", orderItemSchema);

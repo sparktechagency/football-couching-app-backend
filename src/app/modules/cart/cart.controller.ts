@@ -55,10 +55,22 @@ const decreaseCartQuantity = catchAsync(async (req:Request,res:Response)=>{
         data:result
     })
 })
+
+const getCheckoutData = catchAsync(async (req:Request,res:Response)=>{
+    const user = req.user
+    const result = await CartService.checkOutDataOfUserFromDB(user)
+    sendResponse(res,{
+        statusCode:200,
+        success:true,
+        message:"Checkout data fetched successfully",
+        data:result
+    })
+})
 export const CartController = {
     createCart,
     getCart,
     deleteCart,
     increaseCartQuantity,
-    decreaseCartQuantity
+    decreaseCartQuantity,
+    getCheckoutData
 }

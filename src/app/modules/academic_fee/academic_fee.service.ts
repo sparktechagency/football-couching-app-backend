@@ -8,9 +8,13 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { USER_ROLES } from '../../../enums/user';
 import { User } from '../user/user.model';
 import { getRandomId } from '../../../shared/idGenerator';
+import { Course } from '../course/course.model';
+import config from '../../../config';
 
 const createAcademicFeeInDb = async (payload: IAcademicFee) => {
-  const course = await Category.findById(payload.course);
+  console.log(payload);
+  
+  const course = await Course.findById(payload.course);
   if (!course) {
     throw new ApiError(404, 'Course not found');
   }
@@ -31,7 +35,7 @@ const createAcademicFeeInDb = async (payload: IAcademicFee) => {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: course.title,
+            name: `Fee for the ${course.name} course`,
           },
           unit_amount: payload.amount * 100,
         },
@@ -39,24 +43,29 @@ const createAcademicFeeInDb = async (payload: IAcademicFee) => {
       },
     ],
     mode: 'payment',
-    success_url: `http://your-paltform/academic-fee/success`,
-    cancel_url: `http://your-paltform/academic-fee/cancel`,
+    success_url: `${config.url.frontend_url}/success`,
+    cancel_url: `${config.url.frontend_url}/cancel`,
     metadata: {
       feeId: result._id.toString(),
     },
     customer_email: user.email,
+    invoice_creation:{
+      enabled:true
+    }
+
   });
 
   return session.url;
 };
 
-const confirmPayment = async (id: string) => {
+const confirmPayment = async (id: string,invoiceLink:string) => {
   try {
     const fee = await AcademicFee.findById(id);
     const trxId = getRandomId("TRX", 5,"uppercase");
+    const invoice = await stripe.invoices.retrieve(invoiceLink);
     const result = await AcademicFee.findByIdAndUpdate(
       id,
-      { paid: true,trxId },
+      { paid: true,trxId,invoice:invoice.invoice_pdf},
       { new: true }
     );
     return result;
@@ -76,7 +85,12 @@ const getAllAcademicFeeFromDb = async (user:JwtPayload,query: Record<string, any
   ]);
 
   return {
-    academicFees,
+    academicFees:academicFees.map((fee:any) => ({
+      id:fee.trxId,
+      price: fee.amount,
+      date: fee.createdAt,
+    }))
+    ,
     pagination,
   };
 };

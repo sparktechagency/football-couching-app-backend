@@ -52,4 +52,77 @@ const updateProfile = catchAsync(
   }
 );
 
-export const UserController = { createUser, getUserProfile, updateProfile };
+const profileAnalatycs = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+    const result = await UserService.profileAnalatycs(user);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Profile analatics retrieved successfully',
+      data: result,
+    })})
+
+const getCouchAnalatycs = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+    const result = await UserService.couchProfileAnalatycsFromDB(user);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Profile analatics retrieved successfully',
+      data: result,
+    })
+  }
+)
+
+const lockUnlockUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await UserService.lockUnlockUserIntoDb(id);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Profile analatics retrieved successfully',
+      data: result,
+    })
+  }
+)
+
+const userListForAdmin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await UserService.userListForAdmin(req.query);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'User get successfully',
+      pagination: result.pagination,
+      data: result.users,
+    })
+  }
+)
+
+const addAdmin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await UserService.addAdminintoDB(req.body);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Admin Added successfully',
+      data: result,
+    })
+  }
+)
+
+const getStudentInfo = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await UserService.studentInfo(req.params.id);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Student Info retrieved successfully',
+      data: result,
+    })
+  }
+)
+export const UserController = { createUser, getUserProfile, updateProfile,profileAnalatycs,getCouchAnalatycs,lockUnlockUser, userListForAdmin, addAdmin,getStudentInfo};

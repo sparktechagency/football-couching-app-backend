@@ -2,9 +2,10 @@ import bcrypt from 'bcrypt';
 import { StatusCodes } from 'http-status-codes';
 import { model, Schema } from 'mongoose';
 import config from '../../../config';
-import { USER_ROLES } from '../../../enums/user';
+import { FootballRole, USER_ROLES } from '../../../enums/user';
 import ApiError from '../../../errors/ApiError';
 import { IUser, UserModal } from './user.interface';
+import { getRandomId } from '../../../shared/idGenerator';
 
 const userSchema = new Schema<IUser, UserModal>(
   {
@@ -31,7 +32,7 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     image: {
       type: String,
-      default: 'https://i.ibb.co/z5YHLV9/profile.png',
+      default: '/avtar.jpg',
     },
     status: {
       type: String,
@@ -83,6 +84,24 @@ const userSchema = new Schema<IUser, UserModal>(
       type: Date,
       required: false,
     },
+    subscription: {
+      type: Schema.Types.ObjectId,
+      ref: 'Subscription',
+      required: false,
+    },
+    ground_role:{
+      type:String,
+      enum:Object.values(FootballRole),
+      required:false
+    },
+    employeeId:{
+      type:String,
+      required:false
+    },
+    studentId:{
+      type:String,
+      required:false
+    }
   },
   { timestamps: true }
 );
@@ -112,6 +131,14 @@ userSchema.pre('save', async function (next) {
   const isExist = await User.findOne({ email: this.email });
   if (isExist) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Email already exist!');
+  }
+
+  if(this.role == USER_ROLES.MEMBER){
+    this.studentId = getRandomId("STU",5,"uppercase")
+  }
+  else if(this.role == USER_ROLES.COUCH){
+    this.employeeId = getRandomId("EMP",5,"uppercase")
+    
   }
 
   //password hash

@@ -5,11 +5,12 @@ import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { CategoryValidation } from "./category.validation";
 import fileUploadHandler from "../../middlewares/fileUploadHandler";
+import tempAuth from "../../middlewares/tempAuth";
 
 const router = express.Router();
 
 router.route("/")
-.get(CategoryController.getAllCategory)
+.get(tempAuth(),CategoryController.getAllCategory)
 .post(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN),fileUploadHandler(),validateRequest(CategoryValidation.createCategoryZodSchema), CategoryController.createCategory)
 
 router.route("/:id")

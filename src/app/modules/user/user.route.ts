@@ -28,6 +28,22 @@ router
   .post(
     validateRequest(UserValidation.createUserZodSchema),
     UserController.createUser
-  );
+  )
+  .get(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN), UserController.userListForAdmin); 
+
+router.route("/admin")
+  .post(auth(USER_ROLES.SUPER_ADMIN),validateRequest(UserValidation.createUserZodSchema), UserController.addAdmin);
+router
+  .route('/analatycs')
+  .get(auth(), UserController.profileAnalatycs);
+router.route('/student/:id')
+  .get(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN), UserController.getStudentInfo);
+
+// router.route('/couch')
+//   .get(auth(USER_ROLES.COUCH), UserController.getCouchProfile
+router.get("/couch-analatycs", auth(USER_ROLES.COUCH), UserController.getCouchAnalatycs);
+
+router.route("/:id")
+  .patch(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN), UserController.lockUnlockUser)
 
 export const UserRoutes = router;

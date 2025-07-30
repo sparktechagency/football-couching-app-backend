@@ -11,8 +11,8 @@ const createProductZodSchema = z.object({
     price: z.string({
       required_error: "Price is required",
     }),
-    category: z.string({
-      required_error: "Category is required",
+    subcategory: z.string({
+      required_error: "Subcategory is required",
     }),
     images: z.any({
       required_error: "Images are required",

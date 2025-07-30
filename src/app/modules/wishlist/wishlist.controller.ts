@@ -10,8 +10,8 @@ const createWishlist = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
-    message: 'Wishlist created successfully',
-    data: result,
+    message: result.message,
+    data: result.data,
   });
 });
 

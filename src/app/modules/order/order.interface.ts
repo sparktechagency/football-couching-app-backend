@@ -3,6 +3,7 @@ import { ORDER_STATUS } from "../../../enums/order";
 
 export type IOrder = {
     user: Types.ObjectId;
+    orderid?: string;
     address: string;
     phone?: string;
     code ?: string;
@@ -10,6 +11,8 @@ export type IOrder = {
     status: ORDER_STATUS
     totalPrice: number;
     deliveryCharge: number;
+    invoice?: string;
+
 }
 
 export type IOrderItem = {

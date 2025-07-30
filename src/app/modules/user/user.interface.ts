@@ -1,5 +1,5 @@
-import { Model } from 'mongoose';
-import { USER_ROLES } from '../../../enums/user';
+import { Model, Types } from 'mongoose';
+import { FootballRole, USER_ROLES } from '../../../enums/user';
 
 export type IUser = {
   name?: string;
@@ -15,11 +15,17 @@ export type IUser = {
   contact?: string;
   nationality?: string;
   dob: Date;
+  subscription?:Types.ObjectId;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;
     expireAt: Date;
-  };
+  },
+  studentId?:string;
+  employeeId?:string;
+
+  ground_role?:FootballRole
+  
 };
 
 export type UserModal = {

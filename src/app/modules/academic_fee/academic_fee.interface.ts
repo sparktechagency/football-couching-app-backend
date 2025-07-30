@@ -6,6 +6,7 @@ export type IAcademicFee = {
     paid: boolean;
     course: Types.ObjectId;
     trxId?: string;
+    invoice?:string
 };
 
 

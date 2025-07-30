@@ -55,11 +55,17 @@ const getStremingVideoFromDb = async (url:string,req:Request,res:Response) => {
 const getAllTutorialsFromDb = async (query:Record<string,any>)=>{
     const TutorialQuery = new QueryBuilder(Tutorial.find(),query).paginate().filter().sort()
     const [videos,pagination] = await Promise.all([
-        TutorialQuery.modelQuery.lean(),
+        TutorialQuery.modelQuery.populate([{
+            path:"course",
+            select:"name"
+        },{
+            path:"topic",
+            select:"title"
+        }]).lean(),
         TutorialQuery.getPaginationInfo()
     ])
     return {
-        videos,
+        videos:videos.map(video=>({...video,thumbnail:"https://cdn.pixabay.com/photo/2021/10/09/12/45/play-button-6694068_640.png"})),
         pagination
     }
 }

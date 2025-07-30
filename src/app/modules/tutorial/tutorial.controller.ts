@@ -13,7 +13,18 @@ const uploadVideo = catchAsync(async (req: Request, res: Response) => {
     title,
     description,
     course,
+    topic
   } = req.body;
+
+  for(let i in req.body){
+    if(!req.body[i]){
+      delete req.body[i]
+    }
+  };
+
+  console.log(req.body);
+  
+  
 
   const videoUrl = `${Date.now()}${title}${fileName}`
     .toLowerCase()
@@ -26,14 +37,14 @@ const uploadVideo = catchAsync(async (req: Request, res: Response) => {
     !fileId ||
     !fileName ||
     !req.file ||
-    !title ||
-    !description ||
-    !course
+    !title 
   ) {
     return res
       .status(400)
       .json({ success: false, message: 'Missing required fields' });
   }
+
+
 
   // Create temp chunk folder if not exists
   const chunkDir = path.join(process.cwd(), 'uploads', 'temp', fileId);
@@ -44,9 +55,7 @@ const uploadVideo = catchAsync(async (req: Request, res: Response) => {
   // Save this chunk
   const chunkPath = path.join(chunkDir, `${chunkIndex}`);
   fs.renameSync(req.file.path, chunkPath);
-  // console.log(`✅ Chunk ${chunkIndex} saved`);
 
-  // Check if all chunks received
   const files = fs.readdirSync(chunkDir);
   if (files.length === Number(totalChunks)) {
     console.log('📦 All chunks received. Merging now...');
@@ -74,12 +83,7 @@ const uploadVideo = catchAsync(async (req: Request, res: Response) => {
       console.log('🎉 File merge complete!');
     });
 
-    const result = await TutorialService.uploadVideoInDb({
-      course,
-      title,
-      description,
-      video: videoUrl,
-    });
+    const result = await TutorialService.uploadVideoInDb({...req.body, video: videoUrl});
 
     sendResponse(res, {
       statusCode: 200,

@@ -1,7 +1,10 @@
+import { JwtPayload } from "jsonwebtoken";
 import unlinkFile from "../../../shared/unlinkFile";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { ICategory } from "./category.interface";
 import { Category } from "./category.model";
+import { USER_ROLES } from "../../../enums/user";
+import { Subcategory } from "../subcategory/subcategory.model";
 
 const createCategoryToDB = async (payload: ICategory): Promise<ICategory | null> => {
     console.log(payload);
@@ -38,7 +41,7 @@ const deleteCategoryToDB = async (id: string): Promise<ICategory | null> => {
   return result;
 };
 
-const getAllCategoryToDB = async (query:Record<string,any>)=>{
+const getAllCategoryToDB = async (query:Record<string,any>,user:JwtPayload)=>{
     const CategoryQuery = new QueryBuilder(Category.find({status:"active"}),query).filter().search(['title']).sort().paginate()
 
     const [categorys,pagination] = await Promise.all([
@@ -46,7 +49,12 @@ const getAllCategoryToDB = async (query:Record<string,any>)=>{
         CategoryQuery.getPaginationInfo()
     ])
 
-    return {categorys,pagination}
+    const cateGoryData = ![USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user.role) ? categorys : await Promise.all(categorys.map(async (category)=>{
+      const subcategorys = await Subcategory.find({category:category._id}).lean()
+      return {...category,subcategories:subcategorys}
+    }))
+
+    return {categorys:cateGoryData,pagination}
 }
 
 

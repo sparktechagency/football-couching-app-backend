@@ -8,19 +8,38 @@ import { stripe } from '../../../config/stripe';
 import config from '../../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { USER_ROLES } from '../../../enums/user';
+import mongoose from 'mongoose';
+import { CouponService } from '../coupon/coupon.service';
+import { Coupon } from '../coupon/coupon.model';
+import { sendNotifications } from '../../../helpers/notificationHelper';
 
 const createOrderTODb = async (user: JwtPayload, payload: IOrder) => {
-  if (!payload.address || !payload.phone)
-    throw new ApiError(400, 'Address and phone number are required');
+  const mongooseSession  = await mongoose.startSession();
+  mongooseSession.startTransaction();
+try {
+  
+    if (!payload.address)
+    throw new ApiError(400, 'Address required');
   const cart = await Cart.find({ user: user.id }).populate('product').lean();
   if (!cart.length) throw new ApiError(400, 'Cart is empty');
-  const totalPrice = cart.reduce(
+  let totalPrice = cart.reduce(
     (acc, item: any) => acc + item.product.price * item.quantity,
     0
   );
-  const deliveryCharge = 67;
 
-  const order = await Order.create({
+  
+  const deliveryCharge = 67;
+  if(payload.code){
+    const couponCode = await CouponService.checkCouponFromDB(payload.code,user);
+    if(couponCode){
+      totalPrice = totalPrice - (totalPrice * (couponCode.discount / 100));
+
+    }
+
+
+  }
+
+  const order = (await Order.create({
     user: user.id,
     address: payload.address,
     phone: payload.phone,
@@ -29,7 +48,7 @@ const createOrderTODb = async (user: JwtPayload, payload: IOrder) => {
     status: ORDER_STATUS.PENDING,
     totalPrice,
     deliveryCharge,
-  });
+  }))
 
   // console.log(cart);
 
@@ -43,8 +62,10 @@ const createOrderTODb = async (user: JwtPayload, payload: IOrder) => {
     };
   });
 
+  
+
   const line_items = orderItems.map((item: any) => {
-    return {
+    const itemData=  {
       price_data: {
         currency: 'usd',
         product_data: {
@@ -54,10 +75,17 @@ const createOrderTODb = async (user: JwtPayload, payload: IOrder) => {
         unit_amount: item.price * 100,
       },
       quantity: item.quantity,
+
     };
+    return itemData
   });
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
+    discounts: [
+      {
+        coupon:payload.code,
+      },
+    ],
     line_items:[
         ...line_items,
         {
@@ -68,21 +96,33 @@ const createOrderTODb = async (user: JwtPayload, payload: IOrder) => {
                 },
                 unit_amount:deliveryCharge*100
             },
+          
             quantity:1
-        }
+        },
     ],
     mode: 'payment',
-    success_url: `https://wallpaperaccess.com/programming-minimalist`,
-    cancel_url: `https://wallpaperaccess.com/programming-minimalist`,
+      success_url: `${config.url.frontend_url}/success`,
+      cancel_url: `${config.url.frontend_url}/cancel`,
     metadata: {
-      orderId: order._id.toString(),
+      orderId: (order as any)?._id.toString(),
+    },
+    invoice_creation:{
+      enabled:true
     },
     customer_email:user.email,
   });
 
   if (session.url) {
+  await mongooseSession.commitTransaction();
+  await mongooseSession.endSession();
     return session.url;
   }
+} catch (error) {
+  await mongooseSession.abortTransaction();
+  await mongooseSession.endSession();
+  throw new ApiError(400, (error as any).message);
+  
+}
 };
 
 const getOrdersFromDb = async (
@@ -98,20 +138,34 @@ const getOrdersFromDb = async (
     query
   )
     .paginate()
-    .sort();
+    .sort().filter()
   const [orders, pagination] = await Promise.all([
-    OrderQuery.modelQuery.populate('user').lean().exec(),
+   [USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN].includes(user.role)? OrderQuery.modelQuery.populate('user','name image').lean().exec():OrderQuery.modelQuery.lean(),
     OrderQuery.getPaginationInfo(),
   ]);
 
   const modifiedOrders = await Promise.all(
-    orders.map(async order => {
+    orders.map(async (order:any) => {
       const orderItems = await OrderItem.find({ order: order._id })
         .lean();
-      return {
+      if([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN].includes(user.role)){
+        return {
         ...order,
         orderItems,
       };
+      }
+      else{
+        return {
+          _id:order._id,
+          orderId:order.orderid,
+          price:order.totalPrice,
+          deliveryCharge:order.deliveryCharge,
+          status:order.status,
+          orderDate:order.createdAt,
+          totalItems :orderItems.length,
+
+        }
+      }
     })
   );
   return {
@@ -120,7 +174,56 @@ const getOrdersFromDb = async (
   };
 };
 
+const changeOrderStatus = async (orderId: string, status: ORDER_STATUS) => {
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new ApiError(404, 'Order not found');
+  }
+  if([ORDER_STATUS.CANCELED, ORDER_STATUS.DELIVERED].includes(order.status)){
+    throw new ApiError(400, 'Order is already delivered or canceled');
+  }
+
+  if(status == ORDER_STATUS.DELIVERED && order.status != ORDER_STATUS.SHIPPING){
+    throw new ApiError(400, 'Order is not packed yet');
+  }
+
+  if(status == ORDER_STATUS.SHIPPING && order.status != ORDER_STATUS.PACKING){
+    throw new ApiError(400, 'Order is not packed yet');
+  }
+
+  if(status == ORDER_STATUS.PACKING && order.status != ORDER_STATUS.PENDING){
+    throw new ApiError(400, 'Order is not packed yet');
+  }
+
+  const updatedOrder = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+  await sendNotifications({
+    title:`Order is on ${status}`,
+    body: `Your order #${updatedOrder?.orderid} is on ${status}`,
+    reciever:[updatedOrder?.user!],
+    path:"order",
+    referenceId: updatedOrder?._id
+  })
+  return updatedOrder;
+  
+}
+
+const getOrderDetailsFromDB = async (orderId: string) => {
+  const order = await Order.findById(orderId).populate("user")
+  if (!order) {
+    throw new ApiError(404, 'Order not found');
+  }
+
+  const orderItems = await OrderItem.find({ order: order._id })
+  
+  return {
+    order,
+    orderItems
+  };
+}
+
 export const OrderService = {
   createOrderTODb,
   getOrdersFromDb,
+  changeOrderStatus,
+  getOrderDetailsFromDB
 };

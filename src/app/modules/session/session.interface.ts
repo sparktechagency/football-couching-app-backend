@@ -8,6 +8,7 @@ export type ISession = {
     date: Date;
     startTime: Date;
     endTime: Date;
+    couch: Types.ObjectId;
 }
 
 export type SessionModal = {

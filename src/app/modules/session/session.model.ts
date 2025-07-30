@@ -32,6 +32,11 @@ const sessionSchema = new Schema<ISession, SessionModal>(
     date: {
       type: Date,
       required: true,
+    },
+    couch: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     }
   },
   { timestamps: true }

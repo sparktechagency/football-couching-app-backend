@@ -5,10 +5,11 @@ import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { ProductValidation } from './product.validation';
 import fileUploadHandler from '../../middlewares/fileUploadHandler';
+import tempAuth from '../../middlewares/tempAuth';
 const router = express.Router();
 router
   .route('/')
-  .get(ProductController.getAllProduct)
+  .get(tempAuth(),ProductController.getAllProduct)
   .post(
     auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
     fileUploadHandler(),
@@ -26,5 +27,6 @@ router
   .delete(
     auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
     ProductController.deleteProduct
-  );
+  )
+  .get(tempAuth(),ProductController.getSingleProduct);
 export const ProductRoutes = router;

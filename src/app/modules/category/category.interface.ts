@@ -4,7 +4,6 @@ import { CATEGORY_TYPE } from "../../../enums/category";
 export type ICategory = {
     title: string;
     image: string;
-    type:CATEGORY_TYPE
     status:"active"|"deleted"
 }
 

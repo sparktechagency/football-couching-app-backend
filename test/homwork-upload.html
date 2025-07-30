@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chunk Upload Test</title>
+</head>
+<body>
+  <h2>🎥 Upload Video in Chunks (Test)</h2>
+  <input type="file" id="videoInput" />
+  <button onclick="upload()">Upload</button>
+  <p id="status"></p>
+
+  <script>
+    async function upload() {
+      const file = document.getElementById('videoInput').files[0];
+      if (!file) {
+        alert("Please select a file first.");
+        return;
+      }
+
+      const chunkSize = 2 * 1024 * 1024; // 2MB
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      const status = document.getElementById("status");
+
+      status.innerText = "Uploading...";
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(file.size, start + chunkSize);
+        const chunkBlob = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", chunkBlob, file.name); // send chunk with filename
+        formData.append("originalname", file.name);
+        formData.append("chunkIndex", i);
+        formData.append("totalChunks", totalChunks);
+
+        const res = await fetch("http://10.10.7.6:6005/api/v1/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const json = await res.json();
+        console.log(json);
+
+        if (!res.ok) {
+          status.innerText = `❌ Failed at chunk ${i}`;
+          return;
+        }
+      }
+
+      status.innerText = "✅ Upload completed!";
+    }
+  </script>
+</body>
+</html>

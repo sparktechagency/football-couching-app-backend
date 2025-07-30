@@ -23,6 +23,9 @@ const academicFeeSchema = new Schema<IAcademicFee,AcademicFeeModel>(
     },
     trxId: {
       type: String,
+    },
+    invoice: {
+      type:String
     }
   },
   {

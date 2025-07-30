@@ -27,5 +27,8 @@ export default {
   stripe : {
     secret_key: process.env.STRIPE_KEY,
     webhook_secret: process.env.WEBHOOK_SECRET,
+  },
+  url :{
+    frontend_url: process.env.FRONTEND_URL,
   }
 };

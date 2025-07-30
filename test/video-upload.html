@@ -40,9 +40,9 @@
         formData.append("fileName", fileName);
         formData.append("title", "Long Shot")
         formData.append("description", "A long shot of a person");
-        formData.append("course", "6877aa47b9a7857afd445fd8");
-
-        const res = await fetch("http://10.10.7.6:6005/api/v1/tutorial/upload", {
+        // formData.append("course", "687b6848fab635d5eecdf47a");
+        formData.append("topic","687c76b5fab931a01677c4fb")
+        const res = await fetch("http://10.10.7.6:5000/api/v1/tutorial/upload", {
           method: "POST",
           body: formData,
         });
