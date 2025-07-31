@@ -6,6 +6,7 @@ import path from "path";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { JwtPayload } from "jsonwebtoken";
 import { USER_ROLES } from "../../../enums/user";
+import config from "../../../config";
 const uploadVideoInDb = async (payload:ITutorial):Promise<ITutorial|null> => {
     const result = await Tutorial.create(payload);
     return result;
@@ -32,7 +33,7 @@ const getStremingVideoFromDb = async (url:string,req:Request,res:Response) => {
         return;
     }
 
-    const CHUNK_SIZE = 10 ** 6; // 1MB
+    const CHUNK_SIZE = 0.6 ** 6; // 1MB
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
     const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE, fileSize - 1);
@@ -69,7 +70,7 @@ const getAllTutorialsFromDb = async (query:Record<string,any>,user:JwtPayload)=>
         TutorialQuery.getPaginationInfo()
     ])
     return {
-        videos:videos.map(video=>({...video,thumbnail:"https://cdn.pixabay.com/photo/2021/10/09/12/45/play-button-6694068_640.png"})),
+        videos:videos.map((video:any)=>({...video,thumbnail:"https://cdn.pixabay.com/photo/2021/10/09/12/45/play-button-6694068_640.png",video:[USER_ROLES.SUPER_ADMIN,USER_ROLES.ADMIN].includes(user.role)?video.video:`/tutorial/video/${video.video}`})),
         pagination
     }
 }
