@@ -9,7 +9,7 @@
   <input type="file" id="videoInput" />
   <button onclick="upload()">Upload</button>
 
-  <!-- <p id="status"></p> -->
+  <p id="status"></p>
 
   <script>
     async function upload() {
@@ -19,7 +19,7 @@
         return;
       }
 
-      const chunkSize = 2 * 1024 * 1024; // 2MB
+      const chunkSize = 0.5 * 1024 * 1024; // 2MB
       const totalChunks = Math.ceil(file.size / chunkSize);
       const fileId = Date.now(); // or use uuid
       const fileName = file.name;
@@ -40,9 +40,9 @@
         formData.append("fileName", fileName);
         formData.append("title", "Long Shot")
         formData.append("description", "A long shot of a person");
-        // formData.append("course", "687b6848fab635d5eecdf47a");
-        formData.append("topic","687c76b5fab931a01677c4fb")
-        const res = await fetch("http://10.10.7.6:5000/api/v1/tutorial/upload", {
+        formData.append("course", "688b362509bfd4d728db3828");
+        formData.append("topic","688b130109bfd4d728db366d")
+        const res = await fetch("http://31.97.114.108:5000/api/v1/tutorial/upload", {
           method: "POST",
           body: formData,
         });

@@ -78,6 +78,7 @@ const getAllAcademicFeeFromDb = async (user:JwtPayload,query: Record<string, any
   const academicFeeQuery = new QueryBuilder(AcademicFee.find([USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user.role)?{paid:true}:{member:user.id,paid:true}), query)
     .filter()
     .sort()
+    .search(['trxId'])
     .paginate();
   const [academicFees, pagination] = await Promise.all([
     academicFeeQuery.modelQuery.populate('member','name image email studentId').lean(),

@@ -10,6 +10,8 @@ const createProduct = catchAsync(async (req:Request,res:Response)=>{
     if(req.body.sizes){
         req.body.sizes = JSON.parse(req.body.sizes)
     }
+    console.log(req.body);
+    
     const result = await ProductService.createProductToDB(req.body)
     sendResponse(res,{
         statusCode:200,

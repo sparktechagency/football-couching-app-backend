@@ -33,7 +33,7 @@ router
   .get(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN), UserController.userListForAdmin); 
 
 router.route("/admin")
-  .post(auth(USER_ROLES.SUPER_ADMIN),validateRequest(UserValidation.createUserZodSchema), UserController.addAdmin);
+  .post(auth(USER_ROLES.SUPER_ADMIN,USER_ROLES.ADMIN),validateRequest(UserValidation.createUserZodSchema), UserController.addAdmin);
 router
   .route('/analatycs')
   .get(auth(), UserController.profileAnalatycs);

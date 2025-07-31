@@ -213,7 +213,7 @@ const deleteTutorial = catchAsync(async (req: Request, res: Response) => {
 });
 const getAllTutorials = catchAsync(async (req: Request, res: Response) => {
   const query = req.query;
-  const result = await TutorialService.getAllTutorialsFromDb(query);
+  const result = await TutorialService.getAllTutorialsFromDb(query,req.user);
   sendResponse(res, {
     statusCode: 200,
     success: true,

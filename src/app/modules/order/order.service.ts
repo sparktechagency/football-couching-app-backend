@@ -139,6 +139,7 @@ const getOrdersFromDb = async (
     query
   )
     .paginate()
+    .search(['orderid','address',"phone","status"])
     .sort().filter()
   const [orders, pagination] = await Promise.all([
    [USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN].includes(user.role)? OrderQuery.modelQuery.populate('user','name image').lean().exec():OrderQuery.modelQuery.lean(),

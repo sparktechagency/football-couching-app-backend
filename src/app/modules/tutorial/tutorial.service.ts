@@ -4,6 +4,8 @@ import { Tutorial } from "./tutorial.model";
 import fs from "fs";
 import path from "path";
 import QueryBuilder from "../../builder/QueryBuilder";
+import { JwtPayload } from "jsonwebtoken";
+import { USER_ROLES } from "../../../enums/user";
 const uploadVideoInDb = async (payload:ITutorial):Promise<ITutorial|null> => {
     const result = await Tutorial.create(payload);
     return result;
@@ -52,16 +54,18 @@ const getStremingVideoFromDb = async (url:string,req:Request,res:Response) => {
 
 }
 
-const getAllTutorialsFromDb = async (query:Record<string,any>)=>{
+const getAllTutorialsFromDb = async (query:Record<string,any>,user:JwtPayload)=>{
     const TutorialQuery = new QueryBuilder(Tutorial.find(),query).paginate().filter().sort()
     const [videos,pagination] = await Promise.all([
-        TutorialQuery.modelQuery.populate([{
+        (
+            [USER_ROLES.SUPER_ADMIN,USER_ROLES.ADMIN].includes(user.role)?TutorialQuery.modelQuery.populate([{
             path:"course",
             select:"name"
         },{
             path:"topic",
             select:"title"
-        }]).lean(),
+        }]).lean(): TutorialQuery.modelQuery.select("-topic").lean()
+        ),
         TutorialQuery.getPaginationInfo()
     ])
     return {
