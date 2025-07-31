@@ -81,7 +81,7 @@ const getAllAcademicFeeFromDb = async (user:JwtPayload,query: Record<string, any
     .search(['trxId'])
     .paginate();
   const [academicFees, pagination] = await Promise.all([
-    academicFeeQuery.modelQuery.populate('member','name image email studentId').lean(),
+   [USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user.role)? academicFeeQuery.modelQuery.populate('member','name image email studentId').lean(): academicFeeQuery.modelQuery.lean(),
     academicFeeQuery.getPaginationInfo(),
   ]);
 
