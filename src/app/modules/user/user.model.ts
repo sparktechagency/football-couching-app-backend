@@ -101,6 +101,10 @@ const userSchema = new Schema<IUser, UserModal>(
     studentId:{
       type:String,
       required:false
+    },
+    deviceToken:{
+      type:String,
+      required:false
     }
   },
   { timestamps: true }

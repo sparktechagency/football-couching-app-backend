@@ -25,6 +25,7 @@ import { PERFORMANCE_TOPIC } from '../../../enums/performance';
 import { Course } from '../course/course.model';
 import { Package } from '../package/package.model';
 import { stripe } from '../../../config/stripe';
+import { sendNotifications } from '../../../helpers/notificationHelper';
 
 const createUserToDB = async (
   payload: Partial<IUser & { packageId: string }>
@@ -72,31 +73,31 @@ const createUserToDB = async (
 
     return checkoutSession.url;
   }
+    payload.verified = true;
   const createUser = await User.create(payload);
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
   }
 
-  // //send email
-  // const otp = generateOTP();
-  // const values = {
-  //   name: createUser.name!,
-  //   otp: otp,
-  //   email: createUser.email!,
-  // };
-  // const createAccountTemplate = emailTemplate.createAccount(values);
-  // emailHelper.sendEmail(createAccountTemplate);
+  await sendNotifications({
+    title:`You are successfully registered as a ${payload.role?.toUpperCase()}`,
+    body:`Welcome to Elite Academy! We are excited to have you on board.`,
+    reciever:[createUser._id],
+    path:"user",
+    referenceId: createUser._id,
+  })
 
-  // //save to DB
-  // const authentication = {
-  //   oneTimeCode: otp,
-  //   expireAt: new Date(Date.now() + 3 * 60000),
-  // };
-  // await User.findOneAndUpdate(
-  //   { _id: createUser._id },
-  //   { $set: { authentication } }
-  // );
 
+  const emailTamplate = emailTemplate.createAccountData({
+    name: payload.name!,
+    email: payload.email!,
+    password: payload.password!,
+    role: payload.role!,
+  });
+
+  await emailHelper.sendEmail(emailTamplate)
+
+  
   return createUser;
 };
 
@@ -287,7 +288,7 @@ const profileAnalatycs = async (user: JwtPayload) => {
 };
 
 const userListForAdmin = async (query: Record<string, unknown>) => {
-  const filterQuery = query.subscriber=='true' ? {subscription:{ $exists: true, $ne: null}} : {};
+  const filterQuery = query.subscriber=='Subscribed User' ? {subscription:{ $exists: true, $ne: null}} : query.subscriber=='Normal User' ? {subscription:{ $exists: false}} : {};
   delete query.subscriber;
   for(const key in query){
     if(['undefined',''].includes(query[key] as string)){
@@ -296,7 +297,7 @@ const userListForAdmin = async (query: Record<string, unknown>) => {
   }
   const UserQuery = new QueryBuilder(User.find(filterQuery), query)
     .filter()
-    .search(['name', 'email', 'contact'])
+    .search(['name', 'email', 'contact', 'employeeId', 'studentId'])
     .sort()
     .paginate();
 
@@ -351,8 +352,12 @@ const lockUnlockUserIntoDb = async (userId: string) => {
   if (!user) throw new ApiError(404, 'User not found');
   const userData = await User.findByIdAndUpdate(userId, {
     status: user?.status == 'active' ? 'delete' : 'active',
-  });
-  return userData;
+  },{new:true});
+  let message = userData?.status == 'active' ? 'User unlocked successfully' : 'User locked successfully';
+  return {
+    message,
+    userData
+  };
 };
 
 const addAdminintoDB = async (payload: IUser) => {

@@ -39,6 +39,7 @@ const getAllCourseFromDb = async (
 
   const CourseQuery = new QueryBuilder(Course.find(queryData), query)
     .paginate()
+    .search(['name'])
     .sort();
 
   const [courses, paginationResult] = await Promise.all([

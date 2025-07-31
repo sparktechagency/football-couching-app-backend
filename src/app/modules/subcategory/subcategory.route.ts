@@ -10,6 +10,6 @@ router.route("/")
 .get(tempAuth(),SubCategoryController.getAllSubCategory)
 .post(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN),validateRequest(SubCategoryValidation.createSubCategoryZodSchema), SubCategoryController.createSubCategory)
 router.route("/:id")
-.patch(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN),validateRequest(SubCategoryValidation.createSubCategoryZodSchema), SubCategoryController.updateSubCategory)
+.patch(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN), SubCategoryController.updateSubCategory)
 .delete(auth(USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN), SubCategoryController.deleteSubCategory)
 export const SubCategoryRoutes = router;

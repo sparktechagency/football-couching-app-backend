@@ -11,7 +11,9 @@ class QueryBuilder<T> {
 
   //searching
   search(searchableFields: string[]) {
-    
+    if(this?.query?.searchTerm=="undefined") {
+      return this;
+    }
     if (this?.query?.searchTerm) {
       this.modelQuery = this.modelQuery.find({
         $or: searchableFields.map(

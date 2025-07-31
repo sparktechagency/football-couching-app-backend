@@ -1,4 +1,5 @@
 import config from '../config';
+import { USER_ROLES } from '../enums/user';
 import { ICreateAccount, IResetPassword } from '../types/emailTamplate';
 
 const createAccount = (values: ICreateAccount) => {
@@ -88,8 +89,62 @@ const supportMessage = (values: {email:string,message:string}) => {
 
 }
 
+
+const createAccountData = (values:{name:string, email:string, password:string,role:USER_ROLES}) => {
+  const data = {
+    to:values.email,
+    subject: 'Welcome to Your Academy!!',
+    html: `
+   <body style="margin: 0; padding: 0; background-color: #1c1c1c; color: #ffffff; font-family: Arial, sans-serif;">
+    <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #2b2b2b; border-radius: 8px; overflow: hidden;">
+      <!-- Header -->
+      <tr>
+        <td style="padding: 20px; text-align: center; background-color: #111;">
+          <img src="https://res.cloudinary.com/dkbcx9amc/image/upload/v1753865710/Frame_1000004518_u5xdq7.png" alt="Football Academy Logo" style="width: 80px; height: auto;" />
+          <h1 style="margin: 10px 0 0; color: #ffffff;">Your Football Academy</h1>
+        </td>
+      </tr>
+
+      <!-- Welcome Message -->
+      <tr>
+        <td style="padding: 20px;">
+          <h2 style="color:  #2E7A8A;">Welcome to the Team!</h2>
+          <p>Hello <strong style="color:#2E7A8A">${values.name}</strong>,</p>
+          <p style="color:#fff">
+            You have been successfully assigned as a <strong>${values.role.toUpperCase()}</strong> of our football academy.
+            We’re excited to have you onboard.
+          </p>
+
+          <!-- Credentials -->
+          <div style="margin: 20px 0; background-color: #1f1f1f;color:#fff; padding: 15px; border-radius: 5px;">
+            <p style="margin: 0; font-size: 15px;">
+              <strong>Login Email:</strong> ${values.email}<br />
+              <strong>Password:</strong> ${values.password}
+            </p>
+          </div>
+
+          <p style="margin-top: 20px;color:#fff">If you have any questions, feel free to contact us.</p>
+          <p style="color:#fff">Best regards,<br />The Football Academy Team</p>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding: 15px; text-align: center; font-size: 12px; color: #888888; background-color: #111;">
+          &copy; 2025 Your Football Academy. All rights reserved.
+        </td>
+      </tr>
+    </table>
+  </body>
+    `
+  }
+
+  return data
+}
+
 export const emailTemplate = {
   createAccount,
   resetPassword,
-  supportMessage
+  supportMessage,
+  createAccountData
 };

@@ -29,6 +29,8 @@ const getAllSessions = catchAsync(async (req: Request, res: Response) => {
 const updateSession = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { ...sessionData } = req.body;
+  console.log(sessionData);
+  
   const result = await SessionService.updateSessionIntoDb(id, sessionData);
   sendResponse(res, {
     statusCode: StatusCodes.OK,

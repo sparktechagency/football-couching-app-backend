@@ -11,7 +11,7 @@ const createCartinToDB = async (payload:ICart):Promise<ICart | null>=>{
 const getCartFromDB = async(user:JwtPayload)=>{
     const result = await Cart.find({user:user.id}).populate("product").lean()
     const totalPrice = result.reduce((acc,curr:any)=>{
-        return acc + curr.product.price * curr.quantity
+        return acc + curr.product?.price * curr.quantity
     },0)
     const deliveryCharge = 67
     return {result,totalPrice,deliveryCharge}

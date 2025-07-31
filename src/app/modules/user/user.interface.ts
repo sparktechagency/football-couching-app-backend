@@ -23,7 +23,7 @@ export type IUser = {
   },
   studentId?:string;
   employeeId?:string;
-
+  deviceToken?:string;
   ground_role?:FootballRole
   
 };

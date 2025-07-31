@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 import { CouponService } from '../coupon/coupon.service';
 import { Coupon } from '../coupon/coupon.model';
 import { sendNotifications } from '../../../helpers/notificationHelper';
+import { sendNotificationToFCM } from '../../../helpers/sendNotificationFCM';
 
 const createOrderTODb = async (user: JwtPayload, payload: IOrder) => {
   const mongooseSession  = await mongoose.startSession();
@@ -58,7 +59,7 @@ try {
       image: item.product.images[0],
       quantity: item.quantity,
       size: item.size,
-      price: item.product.price,
+      price: item.product?.price,
     };
   });
 
@@ -203,6 +204,15 @@ const changeOrderStatus = async (orderId: string, status: ORDER_STATUS) => {
     path:"order",
     referenceId: updatedOrder?._id
   })
+
+  await sendNotificationToFCM({
+    title:`Order is on ${status}`,
+    body: `Your order #${updatedOrder?.orderid} is on ${status}`,
+    data: {
+      path:"order",
+      referenceId: updatedOrder?._id
+    }
+  },order.user)
   return updatedOrder;
   
 }

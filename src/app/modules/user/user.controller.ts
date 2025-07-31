@@ -7,8 +7,9 @@ import { UserService } from './user.service';
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { ...userData } = req.body;
-    const result = await UserService.createUserToDB(userData);
+    const image = getSingleFilePath(req.files, 'image');
+    const { ...userData} = req.body;
+    const result = await UserService.createUserToDB({...userData, image});
 
     sendResponse(res, {
       success: true,
@@ -83,8 +84,8 @@ const lockUnlockUser = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: 'Profile analatics retrieved successfully',
-      data: result,
+      message: result.message,
+      data: result.userData,
     })
   }
 )

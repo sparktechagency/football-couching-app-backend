@@ -63,6 +63,10 @@ const loginUserFromDB = async (payload: ILoginData) => {
     config.jwt.refresh_expire_in as string
   );
 
+  if(payload?.deviceToken){
+    await User.findByIdAndUpdate(isExistUser._id, { deviceToken: payload.deviceToken });
+  }
+
   return { accessToken:createToken,refreshToken,role:isExistUser.role };
 };
 

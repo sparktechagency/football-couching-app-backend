@@ -6,6 +6,7 @@ import { IProduct, ProductModel } from "../app/modules/product/product.interface
 import { Coupon } from "../app/modules/coupon/coupon.model";
 import { sendAdminNotifications, sendNotifications } from "../helpers/notificationHelper";
 import { stripe } from "../config/stripe";
+import { sendNotificationToFCM } from "../helpers/sendNotificationFCM";
 
 export const handleOrderCheckout = async (data:Stripe.Checkout.Session) => {
     const session = await mongoose.startSession()
@@ -69,6 +70,15 @@ export const handleOrderCheckout = async (data:Stripe.Checkout.Session) => {
             path:"order",
             referenceId:order._id
         })
+
+        await sendNotificationToFCM({
+            title:"Order Placed",
+            body:`Your order ${order.orderid} has been placed successfully`,
+            data:{
+                path:"order",
+                referenceId:order._id
+            },
+        },order.user)
         await session.commitTransaction()
         await session.endSession()
     } catch (error) {

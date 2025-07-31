@@ -38,7 +38,7 @@ const getSessionsFromDB = async (query: Record<string, any>) => {
   const SessionQuery = new QueryBuilder(Session.find({ }), query).paginate().sort().filter()
 
   const [sessions, paginationResult] = await Promise.all([
-    SessionQuery.modelQuery.lean(),
+    SessionQuery.modelQuery.populate("course",'name').lean(),
     SessionQuery.getPaginationInfo()
   ])
   // await Session.updateMany({},{description:"This is a test description"})
@@ -53,6 +53,22 @@ const updateSessionIntoDb = async (id: string, payload: Partial<ISession>) => {
   if (!exist) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Session doesn't exist!");
   }
+  for(let key in payload){
+    if([null,undefined,"","undefined"].includes(payload[key as keyof Partial<ISession>] as any)){
+      delete payload[key as keyof Partial<ISession>]
+    }
+  }
+  if(payload.startTime){
+    payload.startTime = new Date(`${payload.date||exist.date} ${payload.startTime}`)
+  }
+  if(payload.endTime){
+    payload.endTime = new Date(`${payload.date||exist.date} ${payload.endTime}`)
+  }
+  if(payload.date){
+    payload.date = new Date(payload.date)
+  }
+
+  
   const result = await Session.findOneAndUpdate({ _id: id }, payload, {
     new: true,
   });
@@ -107,13 +123,7 @@ const deleteSessionFromDb = async (id: string) => {
   if (!exist) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Session doesn't exist!");
   }
-  const result = await Session.findOneAndUpdate(
-    { _id: id },
-    { status: "delete" },
-    {
-      new: true,
-    }
-  );
+  const result = await Session.findByIdAndDelete(id);
   return result;
 };
 
