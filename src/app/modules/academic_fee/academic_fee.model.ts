@@ -5,7 +5,7 @@ const academicFeeSchema = new Schema<IAcademicFee,AcademicFeeModel>(
   {
     member: {
       type: Schema.Types.ObjectId,
-      ref: 'Member',
+      ref: 'User',
       required: true,
     },
     amount: {

@@ -74,7 +74,10 @@ const createUserToDB = async (
     return checkoutSession.url;
   }
     payload.verified = true;
-  const createUser = await User.create(payload);
+  const createUser = await User.create({
+    ...payload,
+    verified:true
+  });
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
   }

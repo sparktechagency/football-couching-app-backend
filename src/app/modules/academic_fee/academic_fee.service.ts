@@ -80,19 +80,13 @@ const getAllAcademicFeeFromDb = async (user:JwtPayload,query: Record<string, any
     .sort()
     .paginate();
   const [academicFees, pagination] = await Promise.all([
-    academicFeeQuery.modelQuery.lean(),
+    academicFeeQuery.modelQuery.populate('member','name image email studentId').lean(),
     academicFeeQuery.getPaginationInfo(),
   ]);
 
-  return {
-    academicFees:academicFees.map((fee:any) => ({
-      id:fee.trxId,
-      price: fee.amount,
-      date: fee.createdAt,
-    }))
-    ,
-    pagination,
-  };
+  if([USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user.role)){
+    return { academicFees, pagination };
+  }
 };
 
 
