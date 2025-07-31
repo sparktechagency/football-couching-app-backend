@@ -85,9 +85,7 @@ const getAllAcademicFeeFromDb = async (user:JwtPayload,query: Record<string, any
     academicFeeQuery.getPaginationInfo(),
   ]);
 
-  if([USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user.role)){
-    return { academicFees, pagination };
-  }
+  return { academicFees, pagination };
 };
 
 

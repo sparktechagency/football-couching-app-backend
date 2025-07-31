@@ -24,6 +24,7 @@ import { SupportRoutes } from '../app/modules/support/support.route';
 import { NotificationRoutes } from '../app/modules/notification/notification.route';
 import { SubscriptionRoutes } from '../app/modules/subscription/subscription.route';
 import { DashboardRoutes } from '../app/modules/dashboard/dashboard.route';
+import { FaqRoutes } from '../app/modules/faq/faq.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -122,6 +123,10 @@ const apiRoutes = [
   {
     path:"/dashboard",
     route:DashboardRoutes
+  },
+  {
+    path:"/faq",
+    route:FaqRoutes
   }
 ];
 
