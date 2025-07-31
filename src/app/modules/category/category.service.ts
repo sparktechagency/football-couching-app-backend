@@ -49,7 +49,7 @@ const getAllCategoryToDB = async (query:Record<string,any>,user:JwtPayload)=>{
         CategoryQuery.getPaginationInfo()
     ])
 
-    const cateGoryData = ![USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user.role) ? categorys : await Promise.all(categorys.map(async (category)=>{
+    const cateGoryData = ![USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user?.role) ? categorys : await Promise.all(categorys.map(async (category)=>{
       const subcategorys = await Subcategory.find({category:category._id}).lean()
       return {...category,subcategories:subcategorys}
     }))
