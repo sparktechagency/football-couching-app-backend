@@ -13,47 +13,53 @@ const uploadVideoInDb = async (payload:ITutorial):Promise<ITutorial|null> => {
 }
 
 
-const getStremingVideoFromDb = async (url:string,req:Request,res:Response) => {
-  const filePath = path.join(process.cwd(), "uploads","video", url);
+const getStremingVideoFromDb = async (url: string, req: Request, res: Response) => {
+  const filePath = path.join(process.cwd(), "uploads", "video", url);
 
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ message: "Video file not found" });
-    }
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "Video file not found" });
+  }
 
-    const stat = fs.statSync(filePath);
-    const fileSize = stat.size;
-    const range = req.headers.range;
+  const stat = fs.statSync(filePath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
 
-    if (!range) {
-        res.writeHead(200, {
-            "Content-Type": "video/mp4",
-            "Content-Length": fileSize,
-        });
-        fs.createReadStream(filePath).pipe(res);
-        return;
-    }
-
-    const CHUNK_SIZE = 0.6 ** 6; // 1MB
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE, fileSize - 1);
-    
-    if (start >= fileSize || end >= fileSize) {
-        return res.status(416).json({ message: "Requested range not satisfiable" });
-    }
-
-    const contentLength = end - start + 1;
-    res.writeHead(206, {
-        "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": contentLength,
-        "Content-Type": "video/mp4",
+  if (!range) {
+    res.writeHead(200, {
+      "Content-Type": "video/mp4",
+      "Content-Length": fileSize,
     });
+    fs.createReadStream(filePath).pipe(res);
+    return;
+  }
 
-    const stream = fs.createReadStream(filePath, { start, end });
-    stream.pipe(res);
+  const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB
+  const parts = range.replace(/bytes=/, "").split("-");
+  const start = parseInt(parts[0], 10);
+  const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE - 1, fileSize - 1);
 
-}
+  if (start >= fileSize || end >= fileSize) {
+    return res.status(416).send("Requested range not satisfiable\n" + start + " >= " + fileSize);
+  }
+
+  const contentLength = end - start + 1;
+
+  res.writeHead(206, {
+    "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+    "Accept-Ranges": "bytes",
+    "Content-Length": contentLength,
+    "Content-Type": "video/mp4",
+    "Cache-Control": "public, max-age=3600", // add caching to speed up repeat loads
+  });
+
+  const stream = fs.createReadStream(filePath, { start, end });
+
+  stream.on("open", () => stream.pipe(res));
+  stream.on("error", err => {
+    console.error("Stream error:", err);
+    res.status(500).end("Stream error");
+  });
+};
 
 const getAllTutorialsFromDb = async (query:Record<string,any>,user:JwtPayload)=>{
     const TutorialQuery = new QueryBuilder(Tutorial.find(),query).paginate().filter().sort()
