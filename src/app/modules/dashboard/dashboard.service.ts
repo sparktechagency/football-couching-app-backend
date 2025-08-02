@@ -6,6 +6,7 @@ import { Subscription } from '../subscription/subscription.model';
 import { User } from '../user/user.model';
 
 const analaticsFromDb = async (year: string,sellYear:string,studentYear:string) => {
+
   const yearStartDate = new Date(
     year ? year : new Date().getFullYear().toString()
   );
@@ -106,7 +107,7 @@ const sellYearStart = new Date(
     {
       $group: {
         _id: { $month: '$createdAt' },
-        count: { $sum: 1 },
+        count:{$sum:"$totalPrice"}
       },
     },
   ]);
@@ -127,7 +128,7 @@ const sellYearStart = new Date(
   ])
 
   const studentyearStartDate = new Date(
-    year ? year : new Date().getFullYear().toString()
+    studentYear ? studentYear : new Date().getFullYear().toString()
   );
   const studentyearEndDate = new Date((yearStartDate.getFullYear() + 1).toString());
 

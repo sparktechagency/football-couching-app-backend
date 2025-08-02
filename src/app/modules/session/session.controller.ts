@@ -17,7 +17,7 @@ const createSession = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllSessions = catchAsync(async (req: Request, res: Response) => {
-  const result = await SessionService.getSessionsFromDB(req.query);
+  const result = await SessionService.getSessionsFromDB(req.query,req.user);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

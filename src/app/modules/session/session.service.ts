@@ -44,11 +44,11 @@ payload.endTime = new Date(`${payload.date} ${payload.endTime}`);
   return result;
 };
 
-const getSessionsFromDB = async (query: Record<string, any>) => {
+const getSessionsFromDB = async (query: Record<string, any>,user:JwtPayload) => {
   const SessionQuery = new QueryBuilder(Session.find({ }), query).paginate().sort().filter()
 
   const [sessions, paginationResult] = await Promise.all([
-    SessionQuery.modelQuery.populate("course",'name').lean(),
+   [USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user?.role)? SessionQuery.modelQuery.populate("course",'name').lean(): SessionQuery.modelQuery.lean(),
     SessionQuery.getPaginationInfo()
   ])
   // await Session.updateMany({},{description:"This is a test description"})

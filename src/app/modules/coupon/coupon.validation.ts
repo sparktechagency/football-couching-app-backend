@@ -5,7 +5,7 @@ const createCouponZodSchema = z.object({
         name: z.string({
             required_error: "name is required",
         }),
-        discount: z.number({
+        discount: z.string({
             required_error: "Discount is required",
         }),
         expiry: z.string({

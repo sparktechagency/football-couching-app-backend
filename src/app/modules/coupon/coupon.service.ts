@@ -21,7 +21,7 @@ const createCouponIntoDB = async(payload:ICoupon):Promise<ICoupon | null>=>{
 }
 
 const getAllCouponFromDB = async()=>{
-    const result = await Coupon.find({})
+    const result = await Coupon.find({}).sort({"createdAt":-1})
     return result
 }
 

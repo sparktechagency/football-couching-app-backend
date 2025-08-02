@@ -11,7 +11,7 @@ class QueryBuilder<T> {
 
   //searching
   search(searchableFields: string[]) {
-    if(this?.query?.searchTerm=="undefined") {
+    if(['undefined','',undefined,null].includes(this?.query?.searchTerm as string)) {
       return this;
     }
     if (this?.query?.searchTerm) {

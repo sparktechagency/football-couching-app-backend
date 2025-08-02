@@ -18,7 +18,11 @@ const couponSchema = new Schema<ICoupon,CouponModel>({
     users: [{
         type: Schema.Types.ObjectId,
         ref: "User",
-    }]
+    }],
+    name: {
+        type: String,
+        required: true,
+    }
 },{
     timestamps: true,
 })
