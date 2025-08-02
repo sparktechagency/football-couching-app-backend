@@ -31,6 +31,16 @@ payload.endTime = new Date(`${payload.date} ${payload.endTime}`);
     path:"session",
     referenceId: result._id
   })
+  const studentList = await Enroll.find({ course: payload.course }).lean()
+  for( const student of studentList){
+    await sendNotifications({
+      title: "New Session",
+      body: `You have new session on ${payload.startTime.toLocaleDateString()}`,
+      reciever:[student.user],
+      path:"session",
+      referenceId: result._id
+    })
+  }
   return result;
 };
 
