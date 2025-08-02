@@ -267,7 +267,12 @@ const getSessionDetailsFromDB = async (id: string,user:JwtPayload) => {
   }
 
   const homework = await Homework.findOne({ session: id }).populate('course',"name")
-  const tutorials = await Tutorial.find({course: result?.course?._id}).populate('course',"name").limit(6).lean()
+  const tutorials = (await Tutorial.find({course: result?.course?._id}).populate('course',"name").limit(6).lean()).map((t) => {
+    return {
+      ...t,
+      thumbnail:"/football.png"
+    };
+  })
   return {
     sessionInfo: result,
     homework: homework,
