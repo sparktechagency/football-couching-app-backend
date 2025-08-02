@@ -48,7 +48,7 @@ const getSessionsFromDB = async (query: Record<string, any>,user:JwtPayload) => 
   const SessionQuery = new QueryBuilder(Session.find({ }), query).paginate().sort().filter()
 
   const [sessions, paginationResult] = await Promise.all([
-   [USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN].includes(user?.role)? SessionQuery.modelQuery.populate("course",'name').lean(): SessionQuery.modelQuery.lean(),
+   [USER_ROLES.ADMIN,USER_ROLES.SUPER_ADMIN,USER_ROLES.COUCH].includes(user?.role)? SessionQuery.modelQuery.populate("course",'name').lean(): SessionQuery.modelQuery.lean(),
     SessionQuery.getPaginationInfo()
   ])
   // await Session.updateMany({},{description:"This is a test description"})
