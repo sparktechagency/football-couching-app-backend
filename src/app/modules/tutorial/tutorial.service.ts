@@ -76,7 +76,7 @@ const getAllTutorialsFromDb = async (query:Record<string,any>,user:JwtPayload)=>
         TutorialQuery.getPaginationInfo()
     ])
     return {
-        videos:videos.map((video:any)=>({...video,thumbnail:"/football.png",video:[USER_ROLES.SUPER_ADMIN,USER_ROLES.ADMIN].includes(user.role)?video.video:`/tutorial/video/${video.video}`})),
+        videos:videos.map((video:any)=>({...video,thumbnail:"football.png",video:[USER_ROLES.SUPER_ADMIN,USER_ROLES.ADMIN].includes(user.role)?video.video:`/tutorial/video/${video.video}`})),
         pagination
     }
 }

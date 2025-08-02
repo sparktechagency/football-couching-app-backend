@@ -270,7 +270,7 @@ const getSessionDetailsFromDB = async (id: string,user:JwtPayload) => {
   const tutorials = (await Tutorial.find({course: result?.course?._id}).populate('course',"name").limit(6).lean()).map((t) => {
     return {
       ...t,
-      thumbnail:"/football.png"
+      thumbnail:"football.png"
     };
   })
   return {
