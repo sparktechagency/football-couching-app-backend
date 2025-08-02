@@ -153,7 +153,7 @@ const courseOverViewFromDB = async (id: string) => {
     overview :{
       totalStudents,
       attandanceRate :!isNaN(totalAttandancePercentage)? totalAttandancePercentage.toFixed(0)+"%":"0%",
-      totalActivity :!isNaN(avarageScorePercentage)? avarageScorePercentage.toFixed(0)+"%":"",
+      totalActivity :!isNaN(avarageScorePercentage)? avarageScorePercentage.toFixed(0)+"%":"0%",
     }
   }
 
