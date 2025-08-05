@@ -33,6 +33,7 @@ const createPackageToDB = async (
     ...payload,
     paymentLink: paymentLink.url,
     price_id: price.id,
+    product_id: product.id
   })
   return result;
 }
@@ -55,8 +56,26 @@ const updatePackageToDB = async (
     const price = await stripe.prices.update(payload?.price_id!, {
       active: false,
     })
-    payload.price_id = price.id
+    const createNewPrice = await stripe.prices.create({
+      product: isExist?.product_id!,
+      currency: "usd",
+      unit_amount: payload.price * 100,
+      recurring: {
+        interval: payload.duration!,
+      }
+    })
+      const paymentLink = await stripe.paymentLinks.create({
+    line_items: [
+      {
+        price: createNewPrice.id,
+        quantity: 1,
+      },
+    ],
+  })
+  payload.price_id = createNewPrice.id
+  payload.paymentLink = paymentLink.url
   }
+
   const result = await Package.findByIdAndUpdate(id, payload, {
     new: true,
   });

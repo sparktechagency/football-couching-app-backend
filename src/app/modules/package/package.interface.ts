@@ -8,6 +8,7 @@ export type IPackage = {
     duration:"month" | "year" | "week",
     paymentLink:string,
     price_id:string,
+    product_id:string,
 }
 
 

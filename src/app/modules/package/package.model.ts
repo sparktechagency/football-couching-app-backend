@@ -32,6 +32,10 @@ const packageSchema = new Schema<IPackage, PackageModel>(
     price_id: {
       type: String,
       required: true,
+    },
+    product_id:{
+      type: String,
+      required: true,
     }
   },
   {
