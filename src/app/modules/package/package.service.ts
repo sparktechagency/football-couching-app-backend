@@ -51,11 +51,11 @@ const updatePackageToDB = async (
   if (!isExist) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Package not found');
   }
-  console.log(payload);
+
   
 
   if(payload.price && payload.price !== isExist.price){
-    const price = await stripe.prices.update(payload?.price_id!, {
+    const price = await stripe.prices.update(payload?.price_id||"", {
       active: false,
     })
     const createNewPrice = await stripe.prices.create({
