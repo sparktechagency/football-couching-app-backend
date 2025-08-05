@@ -3,6 +3,7 @@ import { ICoupon } from "./coupon.interface"
 import { Coupon } from "./coupon.model"
 import mongoose from "mongoose"
 import { stripe } from "../../../config/stripe"
+import ApiError from "../../../errors/ApiError"
 
 const createCouponIntoDB = async(payload:ICoupon):Promise<ICoupon | null>=>{
    const coupon = await stripe.coupons.create({
@@ -49,6 +50,25 @@ const couponDeleteFromDB = async(id:string)=>{
 }
 
 const updateCouponFromDB = async(id:string,payload:ICoupon)=>{
+    const exist = await Coupon.findById(id)
+    if(!exist){
+        throw new ApiError(404,"Coupon not found")
+    }
+    if(payload.discount && payload.discount !== exist.discount){
+        // check if discount is greater than 100
+        if(payload.discount > 100){
+            throw new ApiError(400,"Discount cannot be greater than 100")
+        }
+
+        const coupon = await stripe.coupons.create({
+            percent_off:payload.discount,
+            duration:"once",
+            metadata:{
+                code:payload.code
+            }
+        })
+        payload.code = coupon.id
+    }
     const result = await Coupon.findByIdAndUpdate(id,payload,{new:true})
     return result
 }
