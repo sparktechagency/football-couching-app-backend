@@ -26,7 +26,7 @@ export const sendNotificationToFCM = async ({
   }
 
   
-  
+  stringData.role = user.role
   
   const message = {
     notification: {

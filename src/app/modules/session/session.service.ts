@@ -13,15 +13,20 @@ import { CourseService } from "../course/course.service";
 import { PerformanceService } from "../performance/performance.service";
 import { Enroll } from "../enroll/enroll.model";
 import { sendNotifications } from "../../../helpers/notificationHelper";
+import { sendNotificationToFCM } from "../../../helpers/sendNotificationFCM";
 
 const createSessionIntoDb = async (payload: ISession) => {
     const course = await Course.findOne({ _id: payload.course });
     if (!course) {
         throw new ApiError(StatusCodes.BAD_REQUEST, "Course not found");
     }
-    payload.couch = course.couch;
+    console.log(payload.startTime);
+    
+    payload.couch = course?.couch!;
 
 payload.startTime = new Date(`${payload.date} ${payload.startTime}`);
+// console.log(payload.startTime.toLocaleTimeString());
+
 payload.endTime = new Date(`${payload.date} ${payload.endTime}`);
   const result = await Session.create(payload);
   await sendNotifications({
@@ -31,6 +36,15 @@ payload.endTime = new Date(`${payload.date} ${payload.endTime}`);
     path:"session",
     referenceId: result._id
   })
+
+  await sendNotificationToFCM({
+    title: "New Session",
+    body: `You have new session on ${payload.startTime.toLocaleDateString()}`,
+    data:{
+      path:"session",
+      referenceId: result._id
+    }
+  }, payload.couch)
   const studentList = await Enroll.find({ course: payload.course }).lean()
   for( const student of studentList){
     await sendNotifications({
@@ -40,6 +54,15 @@ payload.endTime = new Date(`${payload.date} ${payload.endTime}`);
       path:"session",
       referenceId: result._id
     })
+
+    await sendNotificationToFCM({
+      title: "New Session",
+      body: `You have new session on ${payload.startTime.toLocaleDateString()}`,
+      data:{
+        path:"session",
+        referenceId: result._id
+      }
+    }, student.user)
   }
   return result;
 };
