@@ -55,7 +55,7 @@ const updatePackageToDB = async (
   
 
   if(payload.price && payload.price !== isExist.price){
-    const price = await stripe.prices.update(payload?.price_id||"", {
+    const price = await stripe.prices.update(isExist?.price_id||"", {
       active: false,
     })
     const createNewPrice = await stripe.prices.create({
