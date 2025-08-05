@@ -63,12 +63,12 @@ const updateCouponFromDB = async(id:string,payload:ICoupon)=>{
         const coupon = await stripe.coupons.create({
             percent_off:payload.discount,
             duration:"once",
-            metadata:{
-                code:payload.code
-            }
+            name:payload.name
         })
         payload.code = coupon.id
     }
+    console.log(payload);
+    
     const result = await Coupon.findByIdAndUpdate(id,payload,{new:true})
     return result
 }
