@@ -263,7 +263,7 @@ const manageClassForCouchFromDb = async (sessionId:string)=>{
       userId:(student as any)?._id,
       totalPerformance:totalPerformance,
       attandance:performance?.atandance?true:false,
-      homeWork:homeWork?homeWork._id:false
+      homeWork:homeWork?homeWork._id:""
     }
   }))
 
