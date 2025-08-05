@@ -107,6 +107,8 @@ const updateTutorialInDb = async (id:string,payload:Partial<ITutorial>)=>{
     if(!isExist){
         throw new Error("Tutorial not found")
     }
+    console.log(id,payload);
+    
     if(payload.video && isExist.video){
         const filePath = path.join(process.cwd(), "uploads","video", isExist.video);
         if (fs.existsSync(filePath)) {
