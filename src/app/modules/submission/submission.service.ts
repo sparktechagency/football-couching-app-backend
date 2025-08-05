@@ -6,7 +6,8 @@ import { ISubmission } from "./submission.interface"
 import { Submission } from "./submission.model"
 
 const createSubmissionInDB = async (payload:ISubmission):Promise<ISubmission | null> => {
-    console.log(payload);
+    console.log(JSON.parse(payload.video
+    ));
     
     const homework = await Homework.findById(payload.homework)
     if(!homework){
