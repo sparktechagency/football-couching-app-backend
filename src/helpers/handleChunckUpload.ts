@@ -5,7 +5,6 @@ import path from 'path';
 export const handleChunkUpload = async (req: Request, res: Response) => {
     const chunk = req.file;
     const { originalname, chunkIndex, totalChunks } = req.body;
-
     const uploadDir = path.join(__dirname, '../../uploads/video');
     const filePath = path.join(uploadDir, originalname);
 
@@ -19,11 +18,7 @@ export const handleChunkUpload = async (req: Request, res: Response) => {
 
     if (chunk) {
         if (Number(chunkIndex) + 1 === Number(totalChunks)) {
-            res.json({
-                status: 'completed',
-                message: 'File uploaded successfully!',
-                videoUrl: `/videos/${originalname}`,
-            });
+            res.json(`/${originalname}`);
         } else {
             res.json({ status: 'chunkReceived', message: 'Chunk received!' });
         }
