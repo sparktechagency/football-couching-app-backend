@@ -94,7 +94,7 @@ const analaticsFromDb = async (year: string,sellYear:string,studentYear:string) 
 //   console.log(userListByMonths);
 
 const sellYearStart = new Date(
-    sellYear ? sellYear : new Date().getFullYear().toString()
+    sellYear!="" ? sellYear : new Date().getFullYear().toString()
   );
   const sellYearEnd = new Date((yearStartDate.getFullYear() + 1).toString());
   const orderListByMonths = await Order.aggregate([
@@ -128,7 +128,7 @@ const sellYearStart = new Date(
   ])
 
   const studentyearStartDate = new Date(
-    studentYear ? studentYear : new Date().getFullYear().toString()
+    studentYear!="" ? studentYear : new Date().getFullYear().toString()
   );
   const studentyearEndDate = new Date((yearStartDate.getFullYear() + 1).toString());
 
