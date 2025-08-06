@@ -118,7 +118,7 @@ const updateTurorial = catchAsync(async (req: Request, res: Response) => {
     course,
   } = req.body;
 
-  console.log(req.body);
+  console.log(req.body,req.file);
   
 
   if (chunkIndex && totalChunks && fileId && fileName && req.file) {
