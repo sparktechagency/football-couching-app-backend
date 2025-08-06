@@ -118,6 +118,9 @@ const updateTurorial = catchAsync(async (req: Request, res: Response) => {
     course,
   } = req.body;
 
+  console.log(req.body);
+  
+
   if (chunkIndex && totalChunks && fileId && fileName && req.file) {
     const videoUrl = `${Date.now()}${title}${fileName}`
       .toLowerCase()
