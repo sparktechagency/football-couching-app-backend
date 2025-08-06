@@ -133,7 +133,7 @@ const updateTurorial = catchAsync(async (req: Request, res: Response) => {
     // Save this chunk
     const chunkPath = path.join(chunkDir, `${chunkIndex}`);
     fs.renameSync(req.file.path, chunkPath);
-    // console.log(`✅ Chunk ${chunkIndex} saved`);
+    console.log(`✅ Chunk ${chunkIndex} saved`);
 
     // Check if all chunks received
     const files = fs.readdirSync(chunkDir);
