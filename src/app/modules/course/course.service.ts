@@ -15,9 +15,27 @@ import { IEnroll } from '../enroll/enroll.interface';
 import { paginationHelper } from '../../../helpers/paginationHelper';
 import { IUser } from '../user/user.interface';
 import { Submission } from '../submission/submission.model';
+import { sendNotificationToFCM } from '../../../helpers/sendNotificationFCM';
+import { sendNotifications } from '../../../helpers/notificationHelper';
 
 const createCourseIntoDb = async (payload: ICourse) => {
   const result = await Course.create(payload);
+  await sendNotificationToFCM({
+    title: 'You assigned to a course',
+    body: `You assigned for ${result.name} course`,
+    data:{
+      path:"course",
+      referenceId:result._id
+    }
+  },result.couch)
+
+  await sendNotifications({
+    title: 'You assigned to a course',
+    body: `You assigned for ${result.name} course`,
+    reciever:[result.couch],
+    path:"user",
+    referenceId:result._id,
+  })
   return result;
 };
 const getAllCourseFromDb = async (
